@@ -7,3 +7,15 @@ def test_csrf_ok(api_client: APIClient):
     response: Response = api_client.get('/api/auth/csrf/')
     assert response.status_code == status.HTTP_200_OK
     assert 'csrftoken' in response.cookies
+
+
+def test_register_ok(api_client: APIClient, db):
+    api_client = APIClient()
+    response: Response = api_client.post(
+        '/api/auth/register/',
+        {
+            'username': 'username',
+            'password': 'password',
+        },
+    )
+    assert response.status_code == status.HTTP_201_CREATED
