@@ -1,6 +1,7 @@
 from hypothesis import given
 from hypothesis import strategies as st
 from hypothesis.extra.django import TestCase
+from loguru import logger
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient
@@ -27,7 +28,7 @@ class TestAuth(TestCase):
         password=st.from_regex(PASSWORD_REGEX),
     )
     def test_register_ok(self, username, password):
-        print(username, password)
+        logger.info(username, password)
         api_client = APIClient()
         response: Response = api_client.post(
             '/api/auth/register/',
