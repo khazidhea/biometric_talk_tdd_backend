@@ -1,0 +1,38 @@
+name: Test
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: 'secret'
+      DATABASE_URL: 'sqlite:///db.sqlite3'
+      TIMEZONE: 'Asia/Almaty'
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.1.4
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+    - name: Lint
+      run: |
+        poetry run flake8
+        poetry run mypy .
+        poetry run isort .
+    - name: Test with pytest
+      run: poetry run pytest
