@@ -1,3 +1,4 @@
+from faker import Faker
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient
@@ -9,8 +10,13 @@ def test_csrf_ok(api_client: APIClient):
     assert 'csrftoken' in response.cookies
 
 
-def test_register_ok(api_client: APIClient, db):
+def test_register_ok(api_client: APIClient, db, fake):
     api_client = APIClient()
+
+    username = fake.user_name()
+    password = fake.password()
+    print(username)
+    print(password)
     response: Response = api_client.post(
         '/api/auth/register/',
         {
