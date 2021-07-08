@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "02_backend_tdd"
+version = "0.1.0"
+description = ""
+authors = ["khazidhea <azamat@galimzhanov.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^3.2.5"
+djangorestframework = "^3.12.4"
+ipython = "^7.25.0"
+drf-spectacular = "^0.17.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.4"
+pytest-django = "^4.4.0"
+isort = "^5.9.2"
+flake8 = "^3.9.2"
+wemake-python-styleguide = "^0.15.3"
+django-stubs = "^1.8.0"
+djangorestframework-stubs = "^1.4.0"
+mypy = "^0.910"
+pytest-mypy = "^0.8.1"
+mixer = "^7.1.2"
+pytest-cov = "^2.12.1"
+hypothesis = "^6.14.1"
+pytest-freezegun = "^0.4.2"
+pytest-mock = "^3.6.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
