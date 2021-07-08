@@ -1,7 +1,11 @@
-from faker import Faker
+from hypothesis import given
+from hypothesis import strategies as st
+from hypothesis.extra.django import TestCase
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient
+
+from authentication.serializers import PASSWORD_REGEX, USERNAME_REGEX
 
 
 def test_csrf_ok(api_client: APIClient):
@@ -10,18 +14,26 @@ def test_csrf_ok(api_client: APIClient):
     assert 'csrftoken' in response.cookies
 
 
-def test_register_ok(api_client: APIClient, db, fake):
-    api_client = APIClient()
+class TestAuth(TestCase):
+    """Test creating users using hypothesis.
 
-    username = fake.user_name()
-    password = fake.password()
-    print(username)
-    print(password)
-    response: Response = api_client.post(
-        '/api/auth/register/',
-        {
-            'username': 'username',
-            'password': 'password',
-        },
+    Have to use TestCase over function with db fixture due to this bug:
+    https://github.com/HypothesisWorks/hypothesis/issues/377
+    The usernames generated are not unique and are not cleaned up resulting in errors
+    """
+
+    @given(
+        username=st.from_regex(USERNAME_REGEX),
+        password=st.from_regex(PASSWORD_REGEX),
     )
-    assert response.status_code == status.HTTP_201_CREATED
+    def test_register_ok(self, username, password):
+        print(username, password)
+        api_client = APIClient()
+        response: Response = api_client.post(
+            '/api/auth/register/',
+            {
+                'username': username,
+                'password': password,
+            },
+        )
+        assert response.status_code == status.HTTP_201_CREATED
