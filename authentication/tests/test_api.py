@@ -37,3 +37,30 @@ class TestAuth(TestCase):
             },
         )
         assert response.status_code == status.HTTP_201_CREATED
+
+
+def test_register_already_exists(db, mixer, api_client: APIClient):
+    user = mixer.blend('authentication.User')
+    response: Response = api_client.post(
+        '/api/auth/register/',
+        {
+            'username': user.username,
+            'password': 'password123',
+        },
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'This field must be unique' in str(response.data['username'])
+
+
+def test_register_short_password(db, api_client: APIClient, fake):
+    response: Response = api_client.post(
+        '/api/auth/register/',
+        {
+            'username': fake.user_name(),
+            'password': '123',
+        },
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'This value does not match the required pattern' in str(response.data['password'])
